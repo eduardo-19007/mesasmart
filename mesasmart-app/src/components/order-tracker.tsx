@@ -16,7 +16,7 @@ export function OrderTracker({ id, table, accessToken, onBack }: { id: string; t
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
         if (!stopped) { setOrder(result.data); setError(""); }
-      } catch (e) { if (!stopped) setError(e instanceof Error ? e.message : "No se pudo actualizar el pedido"); }
+      } catch (e) { if (!stopped) setError(e instanceof TypeError ? "Sin conexión con el servidor. Su pedido sigue registrado; el seguimiento se actualizará al recuperar la conexión." : e instanceof Error ? e.message : "No se pudo actualizar el pedido"); }
       finally { if (!stopped) timer = setTimeout(refresh, 5000); }
     }
     void refresh();

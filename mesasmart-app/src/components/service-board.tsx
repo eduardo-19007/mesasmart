@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import type { Order } from "@/lib/orders";
 import { LogoutButton } from "./logout-button";
+import { StaffNavigation } from "./staff-navigation";
 
-export function ServiceBoard() {
+export function ServiceBoard({ role }: { role: "ADMIN" | "WAITER" }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState("");
@@ -28,7 +29,7 @@ export function ServiceBoard() {
     finally { setBusy(""); }
   }
   const visible = orders.filter(order => ["Listo", "Entregado"].includes(order.status));
-  return <main className="mx-auto max-w-6xl p-5"><header className="mb-6 flex items-center justify-between"><h1 className="text-3xl font-bold">Atención de mesas</h1><LogoutButton/></header>
+  return <main className="mx-auto max-w-6xl p-5"><div className="mb-5"><StaffNavigation role={role}/></div><header className="mb-6 flex items-center justify-between gap-3"><h1 className="text-3xl font-bold">Atención de mesas</h1><LogoutButton/></header>
     {error && <p role="alert" className="mb-4 text-[var(--coral)]">{error}</p>}
     {!visible.length && <p>No hay pedidos pendientes de entrega o cierre.</p>}
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{visible.map(order => <article key={order.id} className="rounded-md border border-[var(--line)] bg-white p-5">
