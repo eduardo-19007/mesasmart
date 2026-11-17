@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:integration": "node scripts/test-integration.mjs",
+    "test:ml": "node --test scripts/test-ml.mjs",
     "test:load": "node scripts/load-test.mjs",
     "db:migrate": "node scripts/migrate.mjs",
     "db:check": "node scripts/check-database.mjs",

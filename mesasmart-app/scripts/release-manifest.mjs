@@ -12,6 +12,9 @@ async function scan(path) {
 }
 for (const dir of ['src', 'database', 'scripts']) await scan(dir);
 files.push('package.json', 'pnpm-lock.yaml', 'Dockerfile', 'ml/train.py', 'ml/requirements.txt');
+for (const entry of await readdir('ml', { withFileTypes: true })) {
+  if (entry.isFile() && /\.(mjs|mts)$/.test(entry.name)) files.push(join('ml', entry.name));
+}
 const entries = [];
 for (const path of files.sort()) entries.push({ path: path.replaceAll('\\','/'), sha256:createHash('sha256').update(await readFile(path)).digest('hex') });
 const revision = createHash('sha256').update(JSON.stringify(entries)).digest('hex');

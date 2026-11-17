@@ -141,6 +141,16 @@ try {
   check("Registro correcto", one.status, 201);
   check("Reintento concurrente devuelve mismo pedido", one.body.data.id, two.body.data.id);
   const id = one.body.data.id;
+  if (process.env.TEST_ML_SHADOW === 'true') {
+    const events = await sql`select e.metadata from order_events e join orders o on o.id=e.order_id where o.public_code=${id} and o.restaurant_id=${tenant.id} and e.to_status='CONFIRMED'`;
+    check('ML comparación única pese a reintento', events.length, 1);
+    const shadow = events[0].metadata.shadowEstimate;
+    check('ML experimental registrado', shadow?.mode, 'SHADOW');
+    check('ML no sustituye estimación operativa', shadow.operational, false);
+    check('ML referencia coincide con minutos visibles', shadow.baselineMinutes, one.body.data.estimate);
+    check('ML cantidad registrada', shadow.quantity, 2);
+    check('ML predicción y versión válidas', Number.isFinite(shadow.minutes) && shadow.minutes >= 1 && /^[a-f0-9]{64}$/.test(shadow.modelSha256), true);
+  }
   check("Precio calculado por servidor", one.body.data.total, 25);
   check("Misma clave con otro contenido", (await request("/api/orders", { method: "POST", token, body: { ...body, note: "Distinto" } })).status, 409);
   check("Detalle anónimo protegido", (await request("/api/orders/" + id)).status, 403);

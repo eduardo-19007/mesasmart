@@ -8,6 +8,7 @@ import { restaurantId } from "./server-config";
 import { isDemoMode } from "./table-access";
 import { ApiError } from "./api";
 import { menu } from "./data";
+import { experimentalEstimate } from "./server-estimation";
 
 type Input = { table: string; sessionId: string; idempotencyKey: string; expectedTotalCents: number; note?: string; items: Array<{ productId: string; quantity: number; expectedUnitPriceCents?: number }> };
 type ListOptions = { states?: OrderStatus[]; limit?: number; offset?: number };
@@ -75,6 +76,7 @@ class PostgresOrderRepository {
       const changed = input.items.filter(item => item.expectedUnitPriceCents !== products.find(p => p.slug === item.productId)!.price_cents);
       if (subtotal !== input.expectedTotalCents || changed.length) throw new ApiError(409, "Revise los precios actualizados y confirme nuevamente.", "PRICE_CHANGED", { currentTotalCents: subtotal, changes: changed.map(item => { const p = products.find(p => p.slug === item.productId)!; return { productId: p.slug, name: p.name, previousCents: item.expectedUnitPriceCents, currentCents: p.price_cents }; }) });
       const estimate = Math.max(...products.map(p => p.base_minutes));
+      const shadowEstimate = await experimentalEstimate(estimate, input.items.reduce((sum, item) => sum + item.quantity, 0));
       const [order] = await tx`insert into orders
         (restaurant_id, table_session_id, status, notes, subtotal_cents, estimated_minutes, idempotency_key, request_hash, confirmed_at)
         values (${tenant}, ${session.id}, 'CONFIRMED', ${input.note ?? null}, ${subtotal}, ${estimate}, ${input.idempotencyKey}, ${fingerprint}, now()) returning id, public_code`;
@@ -83,7 +85,7 @@ class PostgresOrderRepository {
         await tx`insert into order_items (order_id, product_id, product_name, unit_price_cents, quantity)
           values (${order.id}, ${p.id}, ${p.name}, ${p.price_cents}, ${item.quantity})`;
       }
-      await tx`insert into order_events (order_id, to_status, metadata) values (${order.id}, 'CONFIRMED', '{"source":"TABLE_QR"}')`;
+      await tx`insert into order_events (order_id, to_status, metadata) values (${order.id}, 'CONFIRMED', ${tx.json({ source: "TABLE_QR", ...(shadowEstimate ? { shadowEstimate } : {}) })})`;
       return order.public_code as string;
     });
     return (await this.find(code))!;

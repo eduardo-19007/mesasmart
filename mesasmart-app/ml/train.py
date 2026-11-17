@@ -94,8 +94,8 @@ def main():
     (args.output/'metrics.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     with (args.output/'predictions.csv').open('w',newline='',encoding='utf-8') as stream:
         writer=csv.writer(stream)
-        writer.writerow(['created_at','actual_minutes','baseline_minutes','predicted_minutes'])
-        writer.writerows((r['created_at'],r['actual_minutes'],r['baseline_minutes'],p) for r,p in zip(groups[2],predictions))
+        writer.writerow(['created_at','actual_minutes','baseline_minutes','quantity','predicted_minutes'])
+        writer.writerows((r['created_at'],r['actual_minutes'],r['baseline_minutes'],r['quantity'],p) for r,p in zip(groups[2],predictions))
     print(json.dumps(report,indent=2))
 
 

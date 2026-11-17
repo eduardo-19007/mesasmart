@@ -29,11 +29,27 @@ comparar MAE/RMSE y regla base. El mínimo de 60 registros es un control técnic
 no una justificación estadística ni requisito del sílabo.
 
 Resultados: `results/demo/metrics.json`, `model.json`, `predictions.csv`.
+El CSV de predicciones incluye `quantity` para comprobar inferencia con las mismas
+entradas. Después de entrenar, ejecutar `node scripts/verify-ml-inference.mjs`
+(o añadir la carpeta de resultados como argumento). El evaluador comprueba cada
+predicción frente a Python y rechaza artefactos y entradas incompatibles.
+`ml/inference.mjs` contiene la inferencia portable. Con `ML_SHADOW_MODE=true`,
+el registro de pedidos guarda una comparación experimental en el evento CONFIRMED:
+predicción, referencia, cantidad, procedencia y SHA-256 del modelo. Por defecto está
+desactivado. Los artefactos se cargan desde `ml/results/demo`.
+Un archivo ausente o incompatible conserva el registro normal con la regla base.
+La estimación visible y el exportador de entrenamiento conservan esa regla; el
+resultado experimental no sustituye la validación operativa. No se registra una
+segunda comparación al repetir una clave de idempotencia ya aceptada.
 El modelo portable se verifica contra sklearn con tolerancia 1e-8. Su inferencia
 es intercepto + suma de coeficiente * (variable-media)/escala, limitada a un minuto.
 No cargar archivos pickle de fuentes desconocidas.
 
 ## Restricciones
+
+`npm run test:ml` ejecuta nueve escenarios de inferencia y recuperación (el runner
+cuenta también el contenedor, diez pruebas). No requiere PostgreSQL ni artefactos
+previos; usa archivos temporales aislados que elimina al terminar.
 
 El experimento está entrenado y evaluado sobre datos artificiales; no acredita
 precisión operativa, impacto causal ni validación del restaurante. La aplicación
