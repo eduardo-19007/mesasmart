@@ -97,7 +97,6 @@ Se eliminaron los usuarios, mesas, productos y pedidos temporales creados por la
 5. Si se mantiene el componente IA, construir un conjunto de datos util, separar entrenamiento y evaluacion temporalmente, comparar contra una linea base y calcular el error. No afirmar una mejora del 10% ni otra meta sin evidencia.
 6. Validar el Canvas con entrevistas y costos sustentados; vincular Scrum a tareas y entregables realmente completados, responsables y criterios de aceptacion.
 7. Actualizar referencias, conclusiones, limitaciones, anexos, figuras y tablas conforme a la rubrica. Preparar una demostracion y preguntas de sustentacion basadas en decisiones reales del proyecto.
-8. Respetar la regla de uso de IA de la rubrica: la redaccion asistida no sustituye el analisis, la autoria y la verificacion del equipo. Declarar su uso conforme a lo solicitado por el docente.
 
 ### Fuera del MVP salvo cambio formal de alcance
 

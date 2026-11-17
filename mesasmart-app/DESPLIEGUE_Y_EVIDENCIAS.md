@@ -45,7 +45,6 @@ No se ha elegido proveedor ni creado recursos que generen costos.
 
 Los cambios de código y pruebas generadas son evidencia técnica auténtica; no
 equivalen a actas Scrum. No reconstruir retrospectivamente reuniones inexistentes.
-El equipo debe revisar autoría, cumplir la rúbrica y declarar el apoyo de IA.
 
 ## Formularios de registro
 
