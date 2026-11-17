@@ -1,7 +1,7 @@
 # MesaSmart
 
 MVP local de pedidos por QR con PostgreSQL, Next.js, React y TypeScript.
-La revision detallada esta en [REVISION_Y_PENDIENTES.md](REVISION_Y_PENDIENTES.md). El protocolo operativo, pruebas en telefonos, despliegue, respaldo, carga y piloto se encuentra en [OPERACION_Y_PILOTO.md](OPERACION_Y_PILOTO.md).
+El protocolo operativo, pruebas en telefonos, despliegue, respaldo, carga y piloto se encuentra en [OPERACION_Y_PILOTO.md](OPERACION_Y_PILOTO.md).
 
 ## Preparacion
 
