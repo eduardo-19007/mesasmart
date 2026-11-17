@@ -4,7 +4,17 @@ export function proxy(request: NextRequest) {
   if (!["GET", "HEAD", "OPTIONS"].includes(request.method)) {
     const origin = request.headers.get("origin");
     const expected = process.env.APP_URL ? new URL(process.env.APP_URL).origin : request.nextUrl.origin;
-    if (request.headers.get("sec-fetch-site") === "cross-site" || (origin && origin !== expected)) {
+    const allowedOrigins = new Set([expected]);
+    // Local development uses the LAN URL for phones and loopback for the PC.
+    // Production continues to trust only the configured application origin.
+    if (process.env.NODE_ENV === "development") {
+      const port = new URL(expected).port;
+      const suffix = port ? `:${port}` : "";
+      for (const host of ["localhost", "127.0.0.1", "[::1]"]) {
+        allowedOrigins.add(`http://${host}${suffix}`);
+      }
+    }
+    if (request.headers.get("sec-fetch-site") === "cross-site" || (origin && !allowedOrigins.has(origin))) {
       return NextResponse.json({ error: "Origen no autorizado" }, { status: 403 });
     }
   }

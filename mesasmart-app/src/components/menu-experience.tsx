@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight, Minus, Plus, Search, ShoppingBag, Sparkles, X } from "lucide-react";
 import { AppHeader } from "./app-header";
 import { Category, MenuItem } from "@/lib/data";
+import { createIdempotencyKey } from "@/lib/idempotency";
 
 import { OrderTracker } from "./order-tracker";
 
@@ -56,7 +57,7 @@ export function MenuExperience({ table, accessToken }: { table: string; accessTo
     try {
       const payload = { table, note: note || undefined, expectedTotalCents: Math.round(total * 100), items: Object.entries(cart).filter(([, quantity]) => quantity > 0).map(([productId, quantity]) => ({ productId, quantity, expectedUnitPriceCents: Math.round((products.find(p => p.id === productId)?.price ?? 0) * 100) })) };
       const fingerprint = JSON.stringify(payload);
-      if (attempt.current?.fingerprint !== fingerprint) attempt.current = { fingerprint, key: crypto.randomUUID() };
+      if (attempt.current?.fingerprint !== fingerprint) attempt.current = { fingerprint, key: createIdempotencyKey() };
       const body = pending ?? JSON.stringify({ ...payload, idempotencyKey: attempt.current.key });
       // Persist before sending: a reload must replay the exact intent and key.
       localStorage.setItem(pendingKey, body);

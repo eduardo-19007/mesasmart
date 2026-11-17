@@ -35,6 +35,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test:ml
+      - run: pnpm test:client
       - run: pnpm build
       - run: pnpm db:migrate
       - run: |
